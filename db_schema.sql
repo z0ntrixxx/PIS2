@@ -1,17 +1,8 @@
--- ============================================================
--- ПРОЕКТИРОВАНИЕ БД ИС «Спортивный комплекс»
--- СУБД: PostgreSQL 15
--- Автор: Бураков Д.А., группа ОС-37
--- ============================================================
-
--- 1. ТАБЛИЧНЫЕ ПРОСТРАНСТВА (физическое распределение)
 CREATE TABLESPACE nvme_fast_storage LOCATION '/var/lib/postgresql/nvme';
 CREATE TABLESPACE sata_cold_storage LOCATION '/var/lib/postgresql/sata';
 
--- 2. СПРАВОЧНИКИ (не секционируются, размещаются на быстром диске)
 SET default_tablespace = nvme_fast_storage;
 
--- Секции (виды спорта)
 CREATE TABLE sections (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(100) NOT NULL UNIQUE,
@@ -22,7 +13,6 @@ CREATE TABLE sections (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Тренеры
 CREATE TABLE coaches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(150) NOT NULL,
@@ -34,7 +24,6 @@ CREATE TABLE coaches (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Залы
 CREATE TABLE halls (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(50) NOT NULL UNIQUE,
@@ -42,7 +31,6 @@ CREATE TABLE halls (
     is_available BOOLEAN DEFAULT TRUE
 );
 
--- Клиенты
 CREATE TABLE clients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     full_name VARCHAR(150) NOT NULL,
@@ -52,9 +40,6 @@ CREATE TABLE clients (
     is_active BOOLEAN DEFAULT TRUE
 );
 
--- 3. СЕКЦИОНИРОВАННЫЕ ТАБЛИЦЫ
-
--- Абонементы (секционированы по месяцам)
 CREATE TABLE passes (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
@@ -69,7 +54,6 @@ CREATE TABLE passes (
     PRIMARY KEY (id, valid_from)
 ) PARTITION BY RANGE (valid_from);
 
--- Партиции абонементов
 CREATE TABLE passes_2026_05 PARTITION OF passes
     FOR VALUES FROM ('2026-05-01') TO ('2026-06-01')
     TABLESPACE sata_cold_storage;
@@ -82,7 +66,6 @@ CREATE TABLE passes_2026_07 PARTITION OF passes
     FOR VALUES FROM ('2026-07-01') TO ('2026-08-01')
     TABLESPACE nvme_fast_storage;
 
--- Тренировки (секционированы по датам)
 CREATE TABLE trainings (
     id UUID NOT NULL DEFAULT gen_random_uuid(),
     training_date DATE NOT NULL,
@@ -95,7 +78,6 @@ CREATE TABLE trainings (
     PRIMARY KEY (id, training_date)
 ) PARTITION BY RANGE (training_date);
 
--- Партиции тренировок
 CREATE TABLE trainings_2026_05 PARTITION OF trainings
     FOR VALUES FROM ('2026-05-01') TO ('2026-06-01')
     TABLESPACE sata_cold_storage;
@@ -108,7 +90,6 @@ CREATE TABLE trainings_2026_07 PARTITION OF trainings
     FOR VALUES FROM ('2026-07-01') TO ('2026-08-01')
     TABLESPACE nvme_fast_storage;
 
--- 4. ТАБЛИЦА НАЗНАЧЕНИЙ ТРЕНЕРОВ (учет нагрузки)
 CREATE TABLE coach_assignments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     coach_id UUID NOT NULL REFERENCES coaches(id) ON DELETE CASCADE,
@@ -118,7 +99,6 @@ CREATE TABLE coach_assignments (
     UNIQUE (coach_id, training_id)
 );
 
--- 5. ЕДИНАЯ ТАБЛИЦА ОТЧЕТОВ (стратегия "одна таблица на иерархию")
 CREATE TABLE reports (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     report_type VARCHAR(30) NOT NULL CHECK (report_type IN ('FINANCIAL_FNS', 'STAT_ROSSTAT', 'INTERNAL')),
@@ -139,7 +119,6 @@ CREATE TABLE reports (
     )
 );
 
--- 6. ЖУРНАЛ АУДИТА
 CREATE TABLE audit_log (
     id BIGSERIAL PRIMARY KEY,
     action_type VARCHAR(50) NOT NULL,
@@ -151,7 +130,6 @@ CREATE TABLE audit_log (
     performed_at TIMESTAMP DEFAULT NOW()
 ) TABLESPACE nvme_fast_storage;
 
--- 7. ИНДЕКСЫ
 CREATE INDEX idx_passes_client ON passes(client_id);
 CREATE INDEX idx_passes_section ON passes(section_id);
 CREATE INDEX idx_passes_status ON passes(status);
@@ -165,7 +143,6 @@ CREATE INDEX idx_trainings_status ON trainings(status);
 CREATE INDEX idx_reports_type_period ON reports(report_type, period_from, period_to);
 CREATE INDEX idx_audit_log_table ON audit_log(table_name, performed_at);
 
--- 8. ТРИГГЕР: обновление загрузки тренера
 CREATE OR REPLACE FUNCTION update_coach_load()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -185,7 +162,6 @@ CREATE TRIGGER trg_update_coach_load
 AFTER INSERT OR UPDATE OR DELETE ON coach_assignments
 FOR EACH ROW EXECUTE FUNCTION update_coach_load();
 
--- 9. ПРЕДСТАВЛЕНИЯ
 CREATE VIEW v_monthly_schedule AS
 SELECT 
     t.training_date,
@@ -215,7 +191,6 @@ JOIN clients cl ON p.client_id = cl.id
 JOIN sections s ON p.section_id = s.id
 WHERE p.status = 'ACTIVE' AND p.valid_to >= CURRENT_DATE;
 
--- 10. НАЧАЛЬНЫЕ ДАННЫЕ
 INSERT INTO sections (name, description, max_capacity) VALUES
 ('Плавание', 'Бассейн 25м', 20),
 ('Фитнес', 'Групповые занятия', 15),

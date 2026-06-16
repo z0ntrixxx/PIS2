@@ -1,4 +1,3 @@
-// --- MOCK DATA ---
 const scheduleDraft = [
     { date: '2026-06-10', time: '09:00', section: 'Плавание', hall: 'Бассейн №1', coach: 'Иванов А.А.', status: 'Черновик' },
     { date: '2026-06-10', time: '11:00', section: 'Фитнес', hall: 'Зал №2', coach: 'Петрова В.С.', status: 'Черновик' },
@@ -24,7 +23,6 @@ const coachesData = [
     { id: 'C-04', name: 'Козлова Е.М.', spec: 'Йога', qual: 'Первая', hours: 56, load: 91 }
 ];
 
-// --- NAVIGATION ---
 function showSection(sectionId, btnElement) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
@@ -47,7 +45,6 @@ function showSection(sectionId, btnElement) {
     if (sectionId === 'coaches') loadCoaches();
 }
 
-// --- LOGGING SYSTEM ---
 function addLog(message) {
     const logContainer = document.getElementById('archLog');
     if (!logContainer) return;
@@ -58,7 +55,6 @@ function addLog(message) {
     logContainer.prepend(entry);
 }
 
-// --- SCHEDULE LOGIC ---
 function renderSchedule() {
     const tbody = document.getElementById('scheduleTable');
     if (!tbody) return;
@@ -104,7 +100,6 @@ function publishSchedule() {
     }, 1200);
 }
 
-// --- PASSES LOGIC ---
 function loadPasses() {
     const month = document.getElementById('monthSelect').value;
     const tbody = document.getElementById('passesTable');
@@ -137,7 +132,6 @@ function loadPasses() {
     }, 500);
 }
 
-// --- COACHES LOGIC ---
 function loadCoaches() {
     const tbody = document.getElementById('coachesTable');
     if (!tbody) return;
@@ -169,7 +163,6 @@ function loadCoaches() {
     }, 800);
 }
 
-// --- REPORTING LOGIC ---
 function generateReport(agency) {
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
@@ -203,7 +196,6 @@ function generateReport(agency) {
     }, 250);
 }
 
-// --- DB INIT ---
 function simulateDbInit() {
     addLog('DB Admin: Запуск скрипта инициализации схемы БД...');
     const statusBox = document.getElementById('dbInitStatus');
@@ -223,13 +215,11 @@ function simulateDbInit() {
     }, 1200);
 }
 
-// --- INIT ---
 document.addEventListener('DOMContentLoaded', () => {
     addLog('System: Прототип ИС «Спортивный комплекс» запущен.');
     addLog('Network: Подключение к API Gateway установлено.');
 });
 
-// --- ПЕРЕКЛЮЧЕНИЕ ВИДОВ В РАЗДЕЛЕ БД ---
 function toggleView(view) {
     const schemaView = document.getElementById('schemaView');
     const sqlView = document.getElementById('sqlView');
@@ -243,7 +233,6 @@ function toggleView(view) {
     }
 }
 
-// --- ОБНОВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ БД ---
 function simulateDbInit() {
     addLog('DB Admin: Запуск скрипта инициализации...');
     const statusBox = document.getElementById('dbInitStatus');

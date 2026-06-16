@@ -79,7 +79,6 @@
             </div>
         </div>
 
-        <!-- Раздел 1: Обзор (Dashboard) -->
         <div id="dashboard" class="section active">
             <div class="stats-grid">
                 <div class="stat-card">
@@ -183,7 +182,6 @@
             </div>
         </div>
 
-        <!-- Раздел 2: Планирование -->
         <div id="schedule" class="section">
             <div class="card">
                 <div class="card-header">
@@ -214,7 +212,6 @@
             </div>
         </div>
 
-        <!-- Раздел 3: Абонементы -->
         <div id="passes" class="section">
             <div class="card">
                 <div class="card-header">
@@ -244,7 +241,6 @@
             </div>
         </div>
 
-        <!-- Раздел 4: Тренеры -->
         <div id="coaches" class="section">
             <div class="card">
                 <div class="card-header">
@@ -267,7 +263,6 @@
             </div>
         </div>
 
-        <!-- Раздел 5: Отчетность -->
         <div id="reports" class="section">
             <div class="card">
                 <div class="card-header">
@@ -299,7 +294,6 @@
             </div>
         </div>
 
-        <!-- Раздел: Структура БД -->
         <div id="database" class="section">
             <div class="card">
                 <div class="card-header">
@@ -317,10 +311,8 @@
                         (активные данные) + SATA (архив).</span>
                 </div>
 
-                <!-- Визуальная схема БД -->
                 <div id="schemaView" class="db-schema-visual">
                     <div class="schema-grid">
-                        <!-- Таблица clients -->
                         <div class="db-table-card">
                             <div class="table-header">👤 clients</div>
                             <div class="table-body">
@@ -332,7 +324,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица passes -->
                         <div class="db-table-card partitioned">
                             <div class="table-header">🎫 passes <span class="partition-badge">PARTITIONED</span></div>
                             <div class="table-body">
@@ -352,7 +343,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица sections -->
                         <div class="db-table-card">
                             <div class="table-header">🏷️ sections</div>
                             <div class="table-body">
@@ -363,7 +353,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица trainings -->
                         <div class="db-table-card partitioned">
                             <div class="table-header">📅 trainings <span class="partition-badge">PARTITIONED</span>
                             </div>
@@ -383,7 +372,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица coaches -->
                         <div class="db-table-card">
                             <div class="table-header">👨‍🏫 coaches</div>
                             <div class="table-body">
@@ -395,7 +383,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица coach_assignments -->
                         <div class="db-table-card">
                             <div class="table-header">🔗 coach_assignments</div>
                             <div class="table-body">
@@ -407,7 +394,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица reports -->
                         <div class="db-table-card">
                             <div class="table-header">📊 reports (иерархия)</div>
                             <div class="table-body">
@@ -421,7 +407,6 @@
                             </div>
                         </div>
 
-                        <!-- Таблица audit_log -->
                         <div class="db-table-card">
                             <div class="table-header">📝 audit_log</div>
                             <div class="table-body">
@@ -448,7 +433,6 @@
                     </div>
                 </div>
 
-                <!-- SQL-код -->
                 <div id="sqlView" class="db-box" style="display:none;">
                     <h4>📜 DDL-скрипт (PostgreSQL 15)</h4>
                     <pre><code id="sqlCode">-- Табличное пространство для быстрых данных
@@ -494,7 +478,6 @@ AFTER INSERT ON coach_assignments
 FOR EACH ROW EXECUTE FUNCTION update_coach_load();</code></pre>
                 </div>
 
-                <!-- Маппинг UI → БД -->
                 <div class="db-box" style="margin-top: 20px;">
                     <h4>🔗 Маппинг: Прототип → База данных</h4>
                     <div class="mapping-grid">

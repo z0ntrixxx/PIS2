@@ -34,7 +34,6 @@ body {
     overflow: hidden;
 }
 
-/* Sidebar */
 .sidebar {
     width: 280px;
     background: var(--sidebar-bg);
@@ -141,7 +140,6 @@ body {
     box-shadow: 0 0 8px var(--success);
 }
 
-/* Main Content */
 .main-content {
     flex: 1;
     padding: 32px;
@@ -205,7 +203,6 @@ body {
     color: var(--text-light);
 }
 
-/* Sections */
 .section {
     display: none;
     animation: fadeIn 0.3s;
@@ -227,7 +224,6 @@ body {
     }
 }
 
-/* Cards */
 .card {
     background: var(--surface);
     border-radius: var(--radius);
@@ -256,7 +252,6 @@ body {
     align-items: center;
 }
 
-/* Stats Grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -322,7 +317,6 @@ body {
     color: var(--text-light);
 }
 
-/* Dashboard Grid */
 .dashboard-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -364,7 +358,6 @@ body {
     color: var(--text-light);
 }
 
-/* Bar Chart */
 .bar-chart {
     display: flex;
     flex-direction: column;
@@ -403,7 +396,6 @@ body {
     text-align: right;
 }
 
-/* Buttons */
 .btn-primary,
 .btn-secondary {
     padding: 10px 20px;
@@ -454,7 +446,6 @@ body {
     font-weight: 500;
 }
 
-/* Tables */
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -481,7 +472,6 @@ body {
     background: var(--bg);
 }
 
-/* Info Banner */
 .info-banner {
     background: rgba(79, 70, 229, 0.05);
     border: 1px solid rgba(79, 70, 229, 0.2);
@@ -506,7 +496,6 @@ body {
     color: var(--primary);
 }
 
-/* Report Buttons */
 .report-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -547,7 +536,6 @@ body {
     color: var(--text-light);
 }
 
-/* Progress */
 .progress-container {
     width: 100%;
     height: 8px;
@@ -572,7 +560,6 @@ body {
     min-height: 24px;
 }
 
-/* Console Log */
 .console-log {
     background: #0f172a;
     color: #4ade80;
@@ -594,7 +581,6 @@ body {
     margin-right: 10px;
 }
 
-/* Database Section */
 .db-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -683,7 +669,6 @@ body {
     color: var(--success);
 }
 
-/* Select */
 select {
     padding: 10px 16px;
     border: 1px solid var(--border);
@@ -719,7 +704,6 @@ select {
     }
 }
 
-/* Badges */
 .badge {
     padding: 4px 10px;
     border-radius: 12px;
@@ -748,7 +732,6 @@ select {
     color: var(--text-light);
 }
 
-/* Load Bar */
 .load-bar {
     display: inline-block;
     width: 80px;
@@ -784,7 +767,6 @@ select {
     vertical-align: middle;
 }
 
-/* Визуальная схема БД */
 .schema-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
