@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ИС «Спортивный комплекс» — Прототип</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">🏋️</div>
+            <div class="logo-text">
+                <h2>СпортКомплекс</h2>
+                <span>ИС v2.0</span>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-btn active" onclick="showSection('dashboard', this)">
+                <span class="nav-icon">📊</span>
+                <span>Обзор</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('schedule', this)">
+                <span class="nav-icon">📅</span>
+                <span>Планирование</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('passes', this)">
+                <span class="nav-icon">🎫</span>
+                <span>Абонементы</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('coaches', this)">
+                <span class="nav-icon">👨‍🏫</span>
+                <span>Тренеры</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('reports', this)">
+                <span class="nav-icon">📈</span>
+                <span>Отчетность</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('database', this)">
+                <span class="nav-icon">🗄️</span>
+                <span>Структура БД</span>
+            </button>
+        </nav>
+
+        <div class="system-status">
+            <div class="status-item">
+                <span class="status-dot online"></span>
+                <span>API Gateway</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot online"></span>
+                <span>Redis Cache</span>
+            </div>
+            <div class="status-item">
+                <span class="status-dot online"></span>
+                <span>PostgreSQL 15</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <h1 id="page-title">Обзор системы</h1>
+                <p class="subtitle">Информационная система управления спортивным комплексом</p>
+            </div>
+            <div class="header-right">
+                <div class="user-badge">
+                    <div class="user-avatar">А</div>
+                    <div class="user-info">
+                        <span class="user-name">Администратор</span>
+                        <span class="user-role">Полный доступ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел 1: Обзор (Dashboard) -->
+        <div id="dashboard" class="section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">🎫</div>
+                    <div class="stat-info">
+                        <span class="stat-value">247</span>
+                        <span class="stat-label">Активных абонементов</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">📅</div>
+                    <div class="stat-info">
+                        <span class="stat-value">18</span>
+                        <span class="stat-label">Тренировок на неделе</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👨‍🏫</div>
+                    <div class="stat-info">
+                        <span class="stat-value">12</span>
+                        <span class="stat-label">Тренеров в штате</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📊</div>
+                    <div class="stat-info">
+                        <span class="stat-value">94%</span>
+                        <span class="stat-label">Загрузка залов</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Последние действия</h3>
+                        <button class="btn-link">Все →</button>
+                    </div>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <div class="activity-icon">✅</div>
+                            <div class="activity-content">
+                                <span class="activity-title">Опубликовано расписание на июнь</span>
+                                <span class="activity-time">2 часа назад</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">🎫</div>
+                            <div class="activity-content">
+                                <span class="activity-title">Продан абонемент: Плавание (3 мес.)</span>
+                                <span class="activity-time">3 часа назад</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <div class="activity-icon">📈</div>
+                            <div class="activity-content">
+                                <span class="activity-title">Сформирован отчет для ФНС</span>
+                                <span class="activity-time">Вчера, 18:30</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Загрузка по секциям</h3>
+                    </div>
+                    <div class="chart-placeholder">
+                        <div class="bar-chart">
+                            <div class="bar-item">
+                                <span class="bar-label">Плавание</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 85%"></div></div>
+                                <span class="bar-value">85%</span>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Фитнес</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 72%"></div></div>
+                                <span class="bar-value">72%</span>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Теннис</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 58%"></div></div>
+                                <span class="bar-value">58%</span>
+                            </div>
+                            <div class="bar-item">
+                                <span class="bar-label">Йога</span>
+                                <div class="bar-track"><div class="bar-fill" style="width: 91%"></div></div>
+                                <span class="bar-value">91%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел 2: Планирование -->
+        <div id="schedule" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Планирование тренировок на месяц</h3>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="loadDraft()">📥 Загрузить черновик</button>
+                        <button class="btn-primary" id="publishBtn" onclick="publishSchedule()">🚀 Опубликовать</button>
+                    </div>
+                </div>
+                <div class="info-banner">
+                    <span class="info-icon">ℹ️</span>
+                    <span>Черновики хранятся в <b>Redis</b>. Публикация сохраняет данные в секционированную таблицу <code>trainings</code> (PostgreSQL).</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Время</th>
+                            <th>Секция</th>
+                            <th>Зал</th>
+                            <th>Тренер</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Раздел 3: Абонементы -->
+        <div id="passes" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Управление абонементами</h3>
+                    <div class="header-actions">
+                        <select id="monthSelect" onchange="loadPasses()">
+                            <option value="2026-05">Май 2026 (архив)</option>
+                            <option value="2026-06" selected>Июнь 2026 (активный)</option>
+                        </select>
+                        <button class="btn-primary" onclick="loadPasses()">🔄 Обновить</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Клиент</th>
+                            <th>Секция</th>
+                            <th>Тип</th>
+                            <th>Действует с</th>
+                            <th>Действует по</th>
+                            <th>Статус</th>
+                        </tr>
+                    </thead>
+                    <tbody id="passesTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Раздел 4: Тренеры -->
+        <div id="coaches" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Распределение тренеров</h3>
+                    <button class="btn-primary" onclick="loadCoaches()">🔄 Пересчитать нагрузку</button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>ФИО</th>
+                            <th>Специализация</th>
+                            <th>Квалификация</th>
+                            <th>Часов/мес</th>
+                            <th>Загрузка</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coachesTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Раздел 5: Отчетность -->
+        <div id="reports" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Формирование отчетности</h3>
+                </div>
+                <div class="info-banner">
+                    <span class="info-icon">🔒</span>
+                    <span>Отчеты формируются из <b>READ-ONLY реплики</b> для снятия нагрузки с основного узла БД.</span>
+                </div>
+                <div class="report-buttons">
+                    <button class="btn-report" onclick="generateReport('ФНС')">
+                        <span class="report-icon">📄</span>
+                        <span class="report-title">Отчет в ФНС</span>
+                        <span class="report-desc">Финансовая отчетность</span>
+                    </button>
+                    <button class="btn-report" onclick="generateReport('Росстат')">
+                        <span class="report-icon">📈</span>
+                        <span class="report-title">Отчет в Росстат</span>
+                        <span class="report-desc">Статистические данные</span>
+                    </button>
+                </div>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <p id="reportStatus" class="report-status"></p>
+                <div class="console-log" id="archLog">
+                    <div class="log-entry"><span class="log-time">[System]</span> Инициализация системы...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Раздел 6: Структура БД -->
+        <div id="database" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Проектирование структуры БД</h3>
+                    <button class="btn-primary" onclick="simulateDbInit()">⚡ Инициализировать БД</button>
+                </div>
+                <div class="info-banner">
+                    <span class="info-icon">🔗</span>
+                    <span>DDL-схема сформирована <b>на основе полей прототипа</b> с учетом физического распределения данных (NVMe/SATA).</span>
+                </div>
+                
+                <div class="db-grid">
+                    <div class="db-box">
+                        <h4>📜 DDL-скрипт (PostgreSQL)</h4>
+                        <pre><code id="sqlCode">-- Таблица абонементов (секционирована по месяцам)
+CREATE TABLE passes (
+    id UUID PRIMARY KEY,
+    client_name VARCHAR(150),
+    section_name VARCHAR(100),
+    pass_type VARCHAR(50),
+    valid_from DATE,
+    valid_to DATE,
+    status VARCHAR(20) DEFAULT 'ACTIVE'
+) PARTITION BY RANGE (valid_from);
+
+-- Таблица тренировок (секционирована по датам)
+CREATE TABLE trainings (
+    id UUID PRIMARY KEY,
+    training_date DATE,
+    training_time TIME,
+    section_name VARCHAR(100),
+    hall_name VARCHAR(50),
+    coach_name VARCHAR(150),
+    status VARCHAR(20) DEFAULT 'DRAFT'
+) PARTITION BY RANGE (training_date);
+
+-- Таблица тренеров с учетом нагрузки
+CREATE TABLE coaches (
+    id UUID PRIMARY KEY,
+    full_name VARCHAR(150),
+    specialization VARCHAR(100),
+    qualification VARCHAR(50),
+    monthly_hours INT DEFAULT 0,
+    current_load DECIMAL(5,2) DEFAULT 0
+);</code></pre>
+                    </div>
+                    
+                    <div class="db-box">
+                        <h4>🔗 Маппинг: UI → БД</h4>
+                        <ul class="mapping-list">
+                            <li class="mapping-item">
+                                <span class="mapping-icon">📱</span>
+                                <div class="mapping-content">
+                                    <span class="mapping-label">UI:</span>
+                                    <span class="mapping-value">Таблица "Планирование"</span>
+                                    <span class="mapping-arrow">→</span>
+                                    <span class="mapping-label">БД:</span>
+                                    <code>trainings</code>
+                                </div>
+                            </li>
+                            <li class="mapping-item">
+                                <span class="mapping-icon">📱</span>
+                                <div class="mapping-content">
+                                    <span class="mapping-label">UI:</span>
+                                    <span class="mapping-value">Поле "Тренер"</span>
+                                    <span class="mapping-arrow">→</span>
+                                    <span class="mapping-label">БД:</span>
+                                    <code>coach_name</code>
+                                </div>
+                            </li>
+                            <li class="mapping-item">
+                                <span class="mapping-icon">📱</span>
+                                <div class="mapping-content">
+                                    <span class="mapping-label">UI:</span>
+                                    <span class="mapping-value">Таблица "Абонементы"</span>
+                                    <span class="mapping-arrow">→</span>
+                                    <span class="mapping-label">БД:</span>
+                                    <code>passes</code>
+                                </div>
+                            </li>
+                            <li class="mapping-item">
+                                <span class="mapping-icon">📱</span>
+                                <div class="mapping-content">
+                                    <span class="mapping-label">UI:</span>
+                                    <span class="mapping-value">Выбор месяца</span>
+                                    <span class="mapping-arrow">→</span>
+                                    <span class="mapping-label">БД:</span>
+                                    <code>PARTITION</code>
+                                </div>
+                            </li>
+                        </ul>
+                        <div id="dbInitStatus" class="db-success" style="display: none;">
+                            ✅ <b>Успех!</b> Схема БД развернута. Экстенты созданы.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/app.js" defer></script>
+</body>
+</html>
