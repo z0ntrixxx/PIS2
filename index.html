@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ИС «Спортивный комплекс» — Прототип</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
     <div class="sidebar">
@@ -149,22 +151,30 @@
                         <div class="bar-chart">
                             <div class="bar-item">
                                 <span class="bar-label">Плавание</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 85%"></div></div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 85%"></div>
+                                </div>
                                 <span class="bar-value">85%</span>
                             </div>
                             <div class="bar-item">
                                 <span class="bar-label">Фитнес</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 72%"></div></div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 72%"></div>
+                                </div>
                                 <span class="bar-value">72%</span>
                             </div>
                             <div class="bar-item">
                                 <span class="bar-label">Теннис</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 58%"></div></div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 58%"></div>
+                                </div>
                                 <span class="bar-value">58%</span>
                             </div>
                             <div class="bar-item">
                                 <span class="bar-label">Йога</span>
-                                <div class="bar-track"><div class="bar-fill" style="width: 91%"></div></div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" style="width: 91%"></div>
+                                </div>
                                 <span class="bar-value">91%</span>
                             </div>
                         </div>
@@ -185,7 +195,8 @@
                 </div>
                 <div class="info-banner">
                     <span class="info-icon">ℹ️</span>
-                    <span>Черновики хранятся в <b>Redis</b>. Публикация сохраняет данные в секционированную таблицу <code>trainings</code> (PostgreSQL).</span>
+                    <span>Черновики хранятся в <b>Redis</b>. Публикация сохраняет данные в секционированную таблицу
+                        <code>trainings</code> (PostgreSQL).</span>
                 </div>
                 <table class="data-table">
                     <thead>
@@ -288,108 +299,253 @@
             </div>
         </div>
 
-        <!-- Раздел 6: Структура БД -->
+        <!-- Раздел: Структура БД -->
         <div id="database" class="section">
             <div class="card">
                 <div class="card-header">
-                    <h3>Проектирование структуры БД</h3>
-                    <button class="btn-primary" onclick="simulateDbInit()">⚡ Инициализировать БД</button>
+                    <h3>Проектирование базы данных</h3>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="toggleView('schema')">📊 Схема</button>
+                        <button class="btn-secondary" onclick="toggleView('sql')">💾 SQL</button>
+                        <button class="btn-primary" onclick="simulateDbInit()">⚡ Развернуть БД</button>
+                    </div>
                 </div>
+
                 <div class="info-banner">
-                    <span class="info-icon">🔗</span>
-                    <span>DDL-схема сформирована <b>на основе полей прототипа</b> с учетом физического распределения данных (NVMe/SATA).</span>
+                    <span class="info-icon">🎯</span>
+                    <span>DDL-схема сформирована <b>на основе полей прототипа</b>. Физическое распределение: NVMe
+                        (активные данные) + SATA (архив).</span>
                 </div>
-                
-                <div class="db-grid">
-                    <div class="db-box">
-                        <h4>📜 DDL-скрипт (PostgreSQL)</h4>
-                        <pre><code id="sqlCode">-- Таблица абонементов (секционирована по месяцам)
+
+                <!-- Визуальная схема БД -->
+                <div id="schemaView" class="db-schema-visual">
+                    <div class="schema-grid">
+                        <!-- Таблица clients -->
+                        <div class="db-table-card">
+                            <div class="table-header">👤 clients</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field">full_name VARCHAR(150)</div>
+                                <div class="field unique">📌 phone VARCHAR(20)</div>
+                                <div class="field">email VARCHAR(100)</div>
+                                <div class="field">registration_date DATE</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица passes -->
+                        <div class="db-table-card partitioned">
+                            <div class="table-header">🎫 passes <span class="partition-badge">PARTITIONED</span></div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field fk">🔗 client_id → clients</div>
+                                <div class="field fk">🔗 section_id → sections</div>
+                                <div class="field">pass_type VARCHAR(50)</div>
+                                <div class="field">valid_from DATE ⚡</div>
+                                <div class="field">valid_to DATE</div>
+                                <div class="field">visits_remaining INT</div>
+                                <div class="field">status VARCHAR(20)</div>
+                            </div>
+                            <div class="partitions-list">
+                                <div class="partition cold">passes_2026_05 (SATA)</div>
+                                <div class="partition hot">passes_2026_06 (NVMe)</div>
+                                <div class="partition hot">passes_2026_07 (NVMe)</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица sections -->
+                        <div class="db-table-card">
+                            <div class="table-header">🏷️ sections</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field unique">📌 name VARCHAR(100)</div>
+                                <div class="field">max_capacity INT</div>
+                                <div class="field">min_coach_qualification</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица trainings -->
+                        <div class="db-table-card partitioned">
+                            <div class="table-header">📅 trainings <span class="partition-badge">PARTITIONED</span>
+                            </div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field fk">🔗 section_id → sections</div>
+                                <div class="field fk">🔗 hall_id → halls</div>
+                                <div class="field fk">🔗 coach_id → coaches</div>
+                                <div class="field">training_date DATE ⚡</div>
+                                <div class="field">training_time TIME</div>
+                                <div class="field">status VARCHAR(20)</div>
+                            </div>
+                            <div class="partitions-list">
+                                <div class="partition cold">trainings_2026_05 (SATA)</div>
+                                <div class="partition hot">trainings_2026_06 (NVMe)</div>
+                                <div class="partition hot">trainings_2026_07 (NVMe)</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица coaches -->
+                        <div class="db-table-card">
+                            <div class="table-header">👨‍🏫 coaches</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field">full_name VARCHAR(150)</div>
+                                <div class="field">specialization VARCHAR(100)</div>
+                                <div class="field">qualification VARCHAR(50)</div>
+                                <div class="field">current_load DECIMAL(5,2)</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица coach_assignments -->
+                        <div class="db-table-card">
+                            <div class="table-header">🔗 coach_assignments</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field fk">🔗 coach_id → coaches</div>
+                                <div class="field fk">🔗 training_id → trainings</div>
+                                <div class="field">assignment_date DATE</div>
+                                <div class="field">hours DECIMAL(4,2)</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица reports -->
+                        <div class="db-table-card">
+                            <div class="table-header">📊 reports (иерархия)</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id UUID</div>
+                                <div class="field">report_type VARCHAR(30)</div>
+                                <div class="field">period_from DATE</div>
+                                <div class="field">period_to DATE</div>
+                                <div class="field">total_revenue DECIMAL</div>
+                                <div class="field">total_visits INT</div>
+                                <div class="field">xml_data TEXT</div>
+                            </div>
+                        </div>
+
+                        <!-- Таблица audit_log -->
+                        <div class="db-table-card">
+                            <div class="table-header">📝 audit_log</div>
+                            <div class="table-body">
+                                <div class="field pk">🔑 id BIGSERIAL</div>
+                                <div class="field">action_type VARCHAR(50)</div>
+                                <div class="field">table_name VARCHAR(50)</div>
+                                <div class="field">old_data JSONB</div>
+                                <div class="field">new_data JSONB</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item"><span class="legend-pk">🔑</span> PRIMARY KEY</div>
+                        <div class="legend-item"><span class="legend-fk">🔗</span> FOREIGN KEY</div>
+                        <div class="legend-item"><span class="legend-unique">📌</span> UNIQUE</div>
+                        <div class="legend-item"><span class="legend-part">⚡</span> Partition Key</div>
+                        <div class="legend-item"><span class="partition hot"
+                                style="width:14px;height:14px;display:inline-block;border-radius:3px;"></span> NVMe
+                            (быстрый)</div>
+                        <div class="legend-item"><span class="partition cold"
+                                style="width:14px;height:14px;display:inline-block;border-radius:3px;"></span> SATA
+                            (архив)</div>
+                    </div>
+                </div>
+
+                <!-- SQL-код -->
+                <div id="sqlView" class="db-box" style="display:none;">
+                    <h4>📜 DDL-скрипт (PostgreSQL 15)</h4>
+                    <pre><code id="sqlCode">-- Табличное пространство для быстрых данных
+CREATE TABLESPACE nvme_fast_storage LOCATION '/var/lib/postgresql/nvme';
+CREATE TABLESPACE sata_cold_storage LOCATION '/var/lib/postgresql/sata';
+
+-- Секционированная таблица абонементов
 CREATE TABLE passes (
-    id UUID PRIMARY KEY,
-    client_name VARCHAR(150),
-    section_name VARCHAR(100),
-    pass_type VARCHAR(50),
-    valid_from DATE,
-    valid_to DATE,
-    status VARCHAR(20) DEFAULT 'ACTIVE'
+    id UUID NOT NULL DEFAULT gen_random_uuid(),
+    client_id UUID NOT NULL REFERENCES clients(id),
+    section_id UUID NOT NULL REFERENCES sections(id),
+    pass_type VARCHAR(50) NOT NULL,
+    valid_from DATE NOT NULL,
+    valid_to DATE NOT NULL,
+    visits_remaining INT CHECK (visits_remaining >= 0),
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    PRIMARY KEY (id, valid_from)
 ) PARTITION BY RANGE (valid_from);
 
--- Таблица тренировок (секционирована по датам)
+-- Партиции: старые → SATA, новые → NVMe
+CREATE TABLE passes_2026_05 PARTITION OF passes
+    FOR VALUES FROM ('2026-05-01') TO ('2026-06-01')
+    TABLESPACE sata_cold_storage;
+CREATE TABLE passes_2026_06 PARTITION OF passes
+    FOR VALUES FROM ('2026-06-01') TO ('2026-07-01')
+    TABLESPACE nvme_fast_storage;
+
+-- Секционированная таблица тренировок
 CREATE TABLE trainings (
-    id UUID PRIMARY KEY,
-    training_date DATE,
-    training_time TIME,
-    section_name VARCHAR(100),
-    hall_name VARCHAR(50),
-    coach_name VARCHAR(150),
-    status VARCHAR(20) DEFAULT 'DRAFT'
+    id UUID NOT NULL,
+    training_date DATE NOT NULL,
+    training_time TIME NOT NULL,
+    section_id UUID REFERENCES sections(id),
+    hall_id UUID REFERENCES halls(id),
+    coach_id UUID REFERENCES coaches(id),
+    status VARCHAR(20) DEFAULT 'DRAFT',
+    PRIMARY KEY (id, training_date)
 ) PARTITION BY RANGE (training_date);
 
--- Таблица тренеров с учетом нагрузки
-CREATE TABLE coaches (
-    id UUID PRIMARY KEY,
-    full_name VARCHAR(150),
-    specialization VARCHAR(100),
-    qualification VARCHAR(50),
-    monthly_hours INT DEFAULT 0,
-    current_load DECIMAL(5,2) DEFAULT 0
-);</code></pre>
-                    </div>
-                    
-                    <div class="db-box">
-                        <h4>🔗 Маппинг: UI → БД</h4>
-                        <ul class="mapping-list">
-                            <li class="mapping-item">
-                                <span class="mapping-icon">📱</span>
-                                <div class="mapping-content">
-                                    <span class="mapping-label">UI:</span>
-                                    <span class="mapping-value">Таблица "Планирование"</span>
-                                    <span class="mapping-arrow">→</span>
-                                    <span class="mapping-label">БД:</span>
-                                    <code>trainings</code>
-                                </div>
-                            </li>
-                            <li class="mapping-item">
-                                <span class="mapping-icon">📱</span>
-                                <div class="mapping-content">
-                                    <span class="mapping-label">UI:</span>
-                                    <span class="mapping-value">Поле "Тренер"</span>
-                                    <span class="mapping-arrow">→</span>
-                                    <span class="mapping-label">БД:</span>
-                                    <code>coach_name</code>
-                                </div>
-                            </li>
-                            <li class="mapping-item">
-                                <span class="mapping-icon">📱</span>
-                                <div class="mapping-content">
-                                    <span class="mapping-label">UI:</span>
-                                    <span class="mapping-value">Таблица "Абонементы"</span>
-                                    <span class="mapping-arrow">→</span>
-                                    <span class="mapping-label">БД:</span>
-                                    <code>passes</code>
-                                </div>
-                            </li>
-                            <li class="mapping-item">
-                                <span class="mapping-icon">📱</span>
-                                <div class="mapping-content">
-                                    <span class="mapping-label">UI:</span>
-                                    <span class="mapping-value">Выбор месяца</span>
-                                    <span class="mapping-arrow">→</span>
-                                    <span class="mapping-label">БД:</span>
-                                    <code>PARTITION</code>
-                                </div>
-                            </li>
-                        </ul>
-                        <div id="dbInitStatus" class="db-success" style="display: none;">
-                            ✅ <b>Успех!</b> Схема БД развернута. Экстенты созданы.
+-- Триггер: автоматический пересчет загрузки тренера
+CREATE TRIGGER trg_update_coach_load
+AFTER INSERT ON coach_assignments
+FOR EACH ROW EXECUTE FUNCTION update_coach_load();</code></pre>
+                </div>
+
+                <!-- Маппинг UI → БД -->
+                <div class="db-box" style="margin-top: 20px;">
+                    <h4>🔗 Маппинг: Прототип → База данных</h4>
+                    <div class="mapping-grid">
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Раздел «Планирование»</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ <code>trainings</code> (PARTITION BY training_date)</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Поле «Тренер»</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ <code>coaches.full_name</code> +
+                                <code>coach_assignments</code>
+                            </div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Раздел «Абонементы»</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ <code>passes</code> (PARTITION BY valid_from)</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Выбор месяца</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ Запрос к конкретному <code>PARTITION</code></div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Раздел «Отчетность»</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ <code>reports</code> (report_type = FINANCIAL_FNS /
+                                STAT_ROSSTAT)</div>
+                        </div>
+                        <div class="mapping-item">
+                            <div class="mapping-source">📱 <b>UI:</b> Индикатор загрузки</div>
+                            <div class="mapping-arrow">→</div>
+                            <div class="mapping-target">🗄️ <code>coaches.current_load</code> (обновляется триггером)
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <div id="dbInitStatus" class="db-success" style="display: none;">
+                    ✅ <b>База данных развернута!</b> Создано 8 таблиц, 6 партиций, 2 табличных пространства, 1 триггер,
+                    2 представления.
+                </div>
             </div>
         </div>
-
     </div>
+
+
 
     <script src="js/app.js" defer></script>
 </body>
+
 </html>

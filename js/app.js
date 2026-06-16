@@ -28,10 +28,10 @@ const coachesData = [
 function showSection(sectionId, btnElement) {
     document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-    
+
     document.getElementById(sectionId).classList.add('active');
     if (btnElement) btnElement.classList.add('active');
-    
+
     const titles = {
         'dashboard': 'Обзор системы',
         'schedule': 'Планирование тренировок',
@@ -91,7 +91,7 @@ function publishSchedule() {
     btn.disabled = true;
     btn.innerText = '⏳ Публикация...';
     addLog('API: Запрос на запись в таблицу `trainings` (NVMe).');
-    
+
     setTimeout(() => {
         scheduleDraft.forEach(item => item.status = 'Опубликовано');
         renderSchedule();
@@ -110,11 +110,11 @@ function loadPasses() {
     const tbody = document.getElementById('passesTable');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Запрос к БД...</td></tr>';
-    
+
     setTimeout(() => {
         tbody.innerHTML = '';
         const data = passesData[month] || [];
-        
+
         if (month === '2026-05') {
             addLog(`DB Engine: SELECT * FROM passes_2026_05 (TABLESPACE: sata_cold_storage)`);
         } else {
@@ -142,9 +142,9 @@ function loadCoaches() {
     const tbody = document.getElementById('coachesTable');
     if (!tbody) return;
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Пересчет нагрузки...</td></tr>';
-    
+
     addLog('Planner: Анализ загрузки тренеров...');
-    
+
     setTimeout(() => {
         tbody.innerHTML = '';
         coachesData.forEach(item => {
@@ -174,14 +174,14 @@ function generateReport(agency) {
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
     const statusText = document.getElementById('reportStatus');
-    
+
     if (!progressContainer || !progressBar || !statusText) return;
-    
+
     progressContainer.style.display = 'block';
     progressBar.style.width = '0%';
     statusText.innerText = `Подключение к READ-ONLY реплике...`;
     statusText.style.color = 'var(--text)';
-    
+
     let progress = 0;
     const interval = setInterval(() => {
         progress += 10;
@@ -208,17 +208,17 @@ function simulateDbInit() {
     addLog('DB Admin: Запуск скрипта инициализации схемы БД...');
     const statusBox = document.getElementById('dbInitStatus');
     const sqlCode = document.getElementById('sqlCode');
-    
+
     if (sqlCode) {
         sqlCode.style.opacity = '0.5';
         setTimeout(() => { sqlCode.style.opacity = '1'; }, 300);
     }
-    
+
     addLog('DB Admin: Создание TABLESPACE nvme_fast_storage... OK');
     setTimeout(() => { addLog('DB Admin: Создание TABLESPACE sata_cold_storage... OK'); }, 400);
     setTimeout(() => { addLog('DB Admin: Создание секционированных таблиц... OK'); }, 800);
-    setTimeout(() => { 
-        addLog('DB Admin: Маппинг полей прототипа в колонки БД завершен.'); 
+    setTimeout(() => {
+        addLog('DB Admin: Маппинг полей прототипа в колонки БД завершен.');
         if (statusBox) statusBox.style.display = 'block';
     }, 1200);
 }
@@ -228,3 +228,47 @@ document.addEventListener('DOMContentLoaded', () => {
     addLog('System: Прототип ИС «Спортивный комплекс» запущен.');
     addLog('Network: Подключение к API Gateway установлено.');
 });
+
+// --- ПЕРЕКЛЮЧЕНИЕ ВИДОВ В РАЗДЕЛЕ БД ---
+function toggleView(view) {
+    const schemaView = document.getElementById('schemaView');
+    const sqlView = document.getElementById('sqlView');
+
+    if (view === 'schema') {
+        schemaView.style.display = 'block';
+        sqlView.style.display = 'none';
+    } else {
+        schemaView.style.display = 'none';
+        sqlView.style.display = 'block';
+    }
+}
+
+// --- ОБНОВЛЕННАЯ ФУНКЦИЯ ИНИЦИАЛИЗАЦИИ БД ---
+function simulateDbInit() {
+    addLog('DB Admin: Запуск скрипта инициализации...');
+    const statusBox = document.getElementById('dbInitStatus');
+
+    const steps = [
+        { msg: 'DB Admin: Создание TABLESPACE nvme_fast_storage... OK', delay: 200 },
+        { msg: 'DB Admin: Создание TABLESPACE sata_cold_storage... OK', delay: 400 },
+        { msg: 'DB Admin: Создание справочников (sections, coaches, halls, clients)... OK', delay: 700 },
+        { msg: 'DB Admin: Создание PARTITIONED TABLE passes... OK', delay: 1000 },
+        { msg: 'DB Admin: Создание PARTITIONED TABLE trainings... OK', delay: 1300 },
+        { msg: 'DB Admin: Создание партиций за май/июнь/июль 2026... OK', delay: 1600 },
+        { msg: 'DB Admin: Создание таблицы coach_assignments... OK', delay: 1800 },
+        { msg: 'DB Admin: Создание таблицы reports (иерархия)... OK', delay: 2000 },
+        { msg: 'DB Admin: Создание индексов... OK', delay: 2200 },
+        { msg: 'DB Admin: Установка триггера trg_update_coach_load... OK', delay: 2400 },
+        { msg: 'DB Admin: Создание VIEW v_monthly_schedule, v_active_passes... OK', delay: 2600 },
+        { msg: 'DB Admin: Загрузка начальных данных... OK', delay: 2800 }
+    ];
+
+    steps.forEach(step => {
+        setTimeout(() => addLog(step.msg), step.delay);
+    });
+
+    setTimeout(() => {
+        addLog('✅ БД успешно развернута. Готово к работе.');
+        if (statusBox) statusBox.style.display = 'block';
+    }, 3100);
+}
